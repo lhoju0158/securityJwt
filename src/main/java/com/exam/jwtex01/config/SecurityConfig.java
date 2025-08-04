@@ -1,6 +1,8 @@
 package com.exam.jwtex01.config;
 
+import com.exam.jwtex01.filter.MyFilter1;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
