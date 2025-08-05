@@ -1,5 +1,7 @@
 package com.exam.jwtex01.jwt;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.exam.jwtex01.config.auth.PrincipalDetails;
 import com.exam.jwtex01.model.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,6 +11,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.time.Instant;
+import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -60,6 +64,16 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(HttpServletRequest request,
         HttpServletResponse response, FilterChain chain, Authentication authResult)
         throws IOException, ServletException {
-        super.successfulAuthentication(request, response, chain, authResult);
+
+        PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
+
+        // Hash 방식 (RAS는 아님)
+        String jwtToken = JWT.create()
+            .withSubject("cosToken") // 큰 의미 없음
+            .withExpiresAt(new Date(System.currentTimeMillis()+JwtProperties.EXPIRATION_TIME)) // token 만료시간
+            .withClaim("id", principalDetails.getUser().getId())
+            .withClaim("username", principalDetails.getUser().getUsername())
+            .sign(Algorithm.HMAC512(JwtProperties.SECRET));
+        response.addHeader("Authorization", "Bearer " + jwtToken); // 무조건 Bearer 뒤에 한 칸 띄우기
     }
 }
