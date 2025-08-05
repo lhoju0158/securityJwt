@@ -1,8 +1,10 @@
 package com.exam.jwtex01.config;
 
 import com.exam.jwtex01.filter.MyFilter1;
+import com.exam.jwtex01.filter.MyFilter3;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +24,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            .addFilterBefore(new MyFilter3(), SecurityContextPersistenceFilter.class)
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // session을 사용하지 않겠다. (stateless server)
             .formLogin(AbstractHttpConfigurer::disable) // jwt 쓸거니깐 formLogin 안함
