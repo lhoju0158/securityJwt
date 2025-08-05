@@ -3,6 +3,8 @@ package com.exam.jwtex01.config;
 import com.exam.jwtex01.filter.MyFilter1;
 import com.exam.jwtex01.filter.MyFilter3;
 import com.exam.jwtex01.jwt.JwtAuthenticationFilter;
+import com.exam.jwtex01.jwt.JwtAuthorizationFilter;
+import com.exam.jwtex01.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -24,6 +26,7 @@ public class SecurityConfig {
 
     private final CorsFilter corsFilter;
     private final AuthenticationConfiguration authenticationConfiguration;
+    private final UserRepository userRepository;
 
 
     @Bean
@@ -36,8 +39,8 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // session을 사용하지 않겠다. (stateless server)
             .formLogin(AbstractHttpConfigurer::disable) // jwt 쓸거니깐 formLogin 안함
             .httpBasic(AbstractHttpConfigurer::disable) // 기본적인 Http 형식도 사용하지 않는다.
-            .addFilter(corsFilter) // 인증이 필요한 경우는 filer에 등록을 해야한다.
             .addFilter(new JwtAuthenticationFilter(authenticationManager))
+            .addFilter(new JwtAuthorizationFilter(authenticationManager,userRepository))
             .authorizeHttpRequests(auth -> auth // role에 따른 접근 권한 주기
                 .requestMatchers("/api/v1/user/**").hasAnyRole("USER", "MANAGER", "ADMIN")
                 .requestMatchers("/api/v1/manager/**").hasAnyRole("MANAGER", "ADMIN")

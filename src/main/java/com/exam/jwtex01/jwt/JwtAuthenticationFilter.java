@@ -74,6 +74,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             .withClaim("id", principalDetails.getUser().getId())
             .withClaim("username", principalDetails.getUser().getUsername())
             .sign(Algorithm.HMAC512(JwtProperties.SECRET));
-        response.addHeader("Authorization", "Bearer " + jwtToken); // 무조건 Bearer 뒤에 한 칸 띄우기
+        System.out.println("jwtToken = " + jwtToken);
+        response.addHeader("Authorization", JwtProperties.TOKEN_PREFIX + jwtToken); // 무조건 Bearer 뒤에 한 칸 띄우기
     }
 }
